@@ -26,16 +26,16 @@ The Weather Update App provides weather information and allows users to subscrib
 2. Set up the database:
 
     ```
-    python backend/database.py
+    python3 backend/database.py
     ```
 
 4. Run the Flask app:
 
     ```
-    python backend/app.py
+    python3 backend/app.py
     ```
     ```
-    python backend/mail.py
+    python3 backend/mail.py
     ```
 
 ### Installation and Setup
