@@ -19,20 +19,23 @@ The Weather Update App provides weather information and allows users to subscrib
 1. Clone the repository:
 
     ```
-    git clone https://github.com/your-username/weather-update-app.git
-    cd weather-update-app/backend
+    git clone https://github.com/Acutapugione/weather-app.git
+    cd weather-app/backend
     ```
 
 2. Set up the database:
 
     ```
-    python database.py
+    python backend/database.py
     ```
 
 4. Run the Flask app:
 
     ```
-    python app.py
+    python backend/app.py
+    ```
+    ```
+    python backend/mail.py
     ```
 
 ### Installation and Setup
@@ -46,10 +49,10 @@ The Weather Update App provides weather information and allows users to subscrib
 2. Start a local HTTP server to serve the frontend:
 
     ```
-    python3 -m http.server any-port
+    python3 -m http.server 9000
     ```
 
-3. Access the app in your web browser at `http://localhost:any-port`.
+3. Access the app in your web browser at `http://localhost:9000`.
 
 ## Usage
 
