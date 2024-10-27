@@ -6,28 +6,38 @@ import schedule
 import time
 import requests
 import json
+from flask_apscheduler import APScheduler
+
+
+class Config:
+    SCHEDULER_API_ENABLED = True
 
 
 app = Flask(__name__)
+app.config.from_object(Config())
 
 
-app.config['MAIL_SERVER'] = 'smtp.ukr.net'
-app.config['MAIL_PORT'] = 465
-app.config['MAIL_USERNAME'] = email
-app.config['MAIL_PASSWORD'] = password
-app.config['MAIL_DEFAULT_SENDER'] = email
-app.config['MAIL_USE_TLS'] = False
-app.config['MAIL_USE_SSL'] = True
+app.config["MAIL_SERVER"] = "smtp.ukr.net"
+app.config["MAIL_PORT"] = 465
+app.config["MAIL_USERNAME"] = email
+app.config["MAIL_PASSWORD"] = password
+app.config["MAIL_DEFAULT_SENDER"] = email
+app.config["MAIL_USE_TLS"] = False
+app.config["MAIL_USE_SSL"] = True
+
 
 mail = Mail(app)
 app.app_context().push()
+scheduler = APScheduler()
+scheduler.init_app(app)
+scheduler.start()
 
 
 def create_email_with_data_from_api():
-    response = requests.get('http://localhost:5000/get_weather?location=Sumy')
+    response = requests.get("http://localhost:5000/get_weather?location=Sumy")
     raw_content = response.content
 
-    json_string = raw_content.decode('utf-8')
+    json_string = raw_content.decode("utf-8")
     weather_data = json.loads(json_string)
 
     email_text = f"Weather Update for {weather_data['name']}:\n"
@@ -42,28 +52,35 @@ def create_email_with_data_from_api():
 
 
 def send_email():
-    msg = Message('Event reminder', recipients=get_all_emails())
-    msg.body = 'Your daily weather'
+    msg = Message("Event reminder", recipients=get_all_emails())
+    msg.body = "Your daily weather"
     msg.html = create_email_with_data_from_api()
     mail.send(msg)
-    print('Email sent')
+    print("Email sent")
 
 
-
-@app.route('/create_subscription', methods=['POST'])
+@app.route("/create_subscription", methods=["POST"])
 def subscription():
-    email = request.form.get('email')
+    email = request.form.get("email")
     if email:
         create_subscription(email)
-        return jsonify(message='Subscription added successfully')
+        send_email()
+        return jsonify(message="Subscription added successfully")
     else:
-        return jsonify(error='Email not provided'), 400
+        return jsonify(error="Email not provided"), 400
 
 
-if __name__ == '__main__':
-    schedule.every().day.at("10:00").do(send_email)
+@scheduler.task("interval", id="do_job_1", days=1, misfire_grace_time=900)
+def job1():
+    with app.app_context():
+        send_email()
+        print("email sended")
+
+
+if __name__ == "__main__":
+    # schedule.every().day.at("10:00").do(send_email)
     app.run(port=3000)
-
-    while True:
-        schedule.run_pending()
-        time.sleep(60*60)
+    # # НЕДОСЯЖНИЙ КОД
+    # while True:
+    #     schedule.run_pending()
+    #     time.sleep(60 * 60)
