@@ -8,8 +8,8 @@ The Weather Update App provides weather information and allows users to subscrib
 
 - Flask
 - Flask-Mail
-- SQLitej
 - Flask-Cors
+- Flask-APScheduler
 - requests
 - schedule
 
